@@ -5,7 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.methods.PixelsControl;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -16,8 +19,22 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  */
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode {
+    public PixelsControl PixelsControl = new PixelsControl();
+    public ElapsedTime runtime = new ElapsedTime();
+
+    private double flip_last_moment_switch = 0.0, flip_moment_diff_switch = 0.0;
+    private double hook_last_moment_switch = 0.0, hook_moment_diff_switch = 0.0;
+    private double a;
+
+    private boolean is_servo_flip_opened = false;
+    private boolean is_servo_hook_opened = false;
+    private boolean is_servo_plane_opened = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
+
+        PixelsControl.initHW(this);
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -25,17 +42,76 @@ public class LocalizationTest extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
+
+            a = gamepad1.left_trigger < 0.15 ? 0.65 : 1;
+
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            gamepad1.right_stick_x
+                            -gamepad1.left_stick_y * a,
+                            -gamepad1.left_stick_x * a,
+                            gamepad1.right_stick_x * a
                     )
             );
 
             drive.update();
 
+            //Suction
+            if (gamepad2.right_bumper) {
+                PixelsControl.setSuction(1.0);
+            }
+            else if (gamepad2.left_bumper) {
+                PixelsControl.setSuction(-1.0);
+            }
+            else {
+                PixelsControl.setSuction(0);
+            }
+
+            //Tele
+            if (gamepad2.left_stick_y < -0.1) {
+                PixelsControl.setTele(-0.7);
+            } else if (gamepad2.left_stick_y > 0.1) {
+                PixelsControl.setTele(0.7);
+            } else {
+                PixelsControl.setTele(0);
+            }
+
+            //Flip
+            flip_moment_diff_switch = runtime.milliseconds() - flip_last_moment_switch;
+            hook_moment_diff_switch = runtime.milliseconds() - hook_last_moment_switch;
+
+            if (gamepad2.x == true && flip_moment_diff_switch > 200) {
+                if (is_servo_flip_opened == false) {
+                    PixelsControl.setFlip(0);
+                    is_servo_flip_opened = true;
+                } else {
+                    PixelsControl.setFlip(1);
+                    is_servo_flip_opened = false;
+                }
+                flip_last_moment_switch = runtime.milliseconds();
+            }
+
+            //Hook
+            if (gamepad2.y == true && hook_moment_diff_switch > 200) {
+                if (is_servo_hook_opened == false) {
+                    PixelsControl.setHook(0.2);
+                    is_servo_hook_opened = true;
+                } else {
+                    PixelsControl.setHook(0.8);
+                    is_servo_hook_opened = false;
+                }
+                hook_last_moment_switch = runtime.milliseconds();
+            }
+
+            //Airplane
+            if (gamepad2.back) {
+                if (is_servo_plane_opened == false) {
+                    PixelsControl.setPlane(0);
+                    is_servo_plane_opened = true;
+                }
+            }
+
             Pose2d poseEstimate = drive.getPoseEstimate();
+
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
