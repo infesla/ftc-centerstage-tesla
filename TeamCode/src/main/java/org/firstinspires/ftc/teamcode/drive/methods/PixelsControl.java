@@ -33,9 +33,9 @@ public class PixelsControl {
 
         motor_suction.setPower(0);
         motor_tele.setPower(0);
-        servo_flip.setPosition(0);
+        servo_flip.setPosition(0.03);
         servo_hook.setPosition(0.8);
-        servo_plane.setPosition(0.2);
+        servo_plane.setPosition(0.25);
     }
 
     public void setSuction(double power) {

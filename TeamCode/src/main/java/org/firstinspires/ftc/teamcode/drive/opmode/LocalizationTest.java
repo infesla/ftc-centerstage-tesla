@@ -81,10 +81,10 @@ public class LocalizationTest extends LinearOpMode {
 
             if (gamepad2.x == true && flip_moment_diff_switch > 200) {
                 if (is_servo_flip_opened == false) {
-                    PixelsControl.setFlip(0);
+                    PixelsControl.setFlip(0.03);
                     is_servo_flip_opened = true;
                 } else {
-                    PixelsControl.setFlip(1);
+                    PixelsControl.setFlip(0.85);
                     is_servo_flip_opened = false;
                 }
                 flip_last_moment_switch = runtime.milliseconds();
