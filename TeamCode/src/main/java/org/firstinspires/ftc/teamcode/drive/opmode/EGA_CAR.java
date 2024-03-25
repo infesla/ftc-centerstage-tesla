@@ -32,6 +32,7 @@ public class EGA_CAR extends LinearOpMode {
     private boolean is_servo_flip_opened = false;
     private boolean is_servo_hook_opened = false;
     private boolean is_servo_plane_opened = false;
+    private boolean is_servo_hang_opened = false;
 
     private boolean is_motor_flip_opened = true;
 
@@ -119,7 +120,7 @@ public class EGA_CAR extends LinearOpMode {
             flip_moment_diff_switch = runtime.milliseconds() - flip_last_moment_switch;
             hook_moment_diff_switch = runtime.milliseconds() - hook_last_moment_switch;
 
-            if (gamepad2.x && flip_moment_diff_switch > 200) {
+            if (gamepad2.x && flip_moment_diff_switch > 1500) {
                 if (!is_servo_flip_opened) {
                     PixelsControl.setHook_2(0);
                     is_servo_flip_opened = true;
@@ -150,6 +151,24 @@ public class EGA_CAR extends LinearOpMode {
                 hook_last_moment_switch = runtime.milliseconds();
             }
 
+            //Hang
+            if (gamepad1.x) {
+                if(is_servo_hang_opened == false) {
+                    PixelsControl.sethang(0.5);
+                    is_servo_hang_opened = true;
+                } else {
+
+                    PixelsControl.sethang(1);
+                    is_servo_hang_opened = false;
+                }
+            }
+            if(gamepad1.a) {
+                PixelsControl.encLeft(1);
+            } else if (gamepad1.b) {
+                PixelsControl.encLeft(-1);
+            } else{
+                PixelsControl.encLeft(0);
+            }
             //Airplane
             if (gamepad2.back) {
                 if (is_servo_plane_opened == false) {
