@@ -398,7 +398,7 @@ public class RedTagAuto extends LinearOpMode {
 
         runtime.reset();
 
-        while (!isStopRequested() && ((runtime.milliseconds() - 500) < 0)) {
+        while (!isStopRequested() && ((runtime.milliseconds() - 400) < 0)) {
             leftFront.setPower(0.2);
             leftRear.setPower(0.2);
             rightFront.setPower(0.2);
@@ -418,11 +418,15 @@ public class RedTagAuto extends LinearOpMode {
 
         PixelsControl.setTele(0);
 
-        PixelsControl.setFlip(0.3);
+        PixelsControl.setFlip(1);
 
         sleep(1000);
 
-        PixelsControl.setHook(0.2);
+        PixelsControl.setHook(0.3);
+
+        sleep(1000);
+
+        PixelsControl.setFlip(1);
 
         sleep(1000);
 
@@ -430,7 +434,7 @@ public class RedTagAuto extends LinearOpMode {
 
         sleep(1000);
 
-        PixelsControl.setFlip(0.795);
+        PixelsControl.setFlip(0.03);
 
         PixelsControl.setTele(-1);
 

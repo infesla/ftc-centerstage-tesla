@@ -115,6 +115,14 @@ public class EGA_CAR extends LinearOpMode {
                 PixelsControl.setHang(1);
             }
 
+            //Airplane
+            if (gamepad1.back) {
+                if (is_servo_plane_opened == false) {
+                    PixelsControl.setPlane(0.19);
+                    is_servo_plane_opened = true;
+                }
+            }
+
             //Pull up
             if (gamepad1.a) {
                 PixelsControl.encLeft(1);
@@ -180,13 +188,6 @@ public class EGA_CAR extends LinearOpMode {
                 flip_last_moment_switch = runtime.milliseconds();
             }
 
-            //Airplane
-            if (gamepad2.start) {
-                if (is_servo_plane_opened == false) {
-                    PixelsControl.setPlane(0.19);
-                    is_servo_plane_opened = true;
-                }
-            }
 
             //Color
             color_moment_diff = runtime.milliseconds() - color_moment_last;

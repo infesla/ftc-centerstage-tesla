@@ -64,7 +64,7 @@ public class PixelsControl {
         servo_flip.setPosition(0);
         servo_hook.setPosition(0.3);
         servo_hook_2.setPosition(0.3);
-        servo_plane.setPosition(0.43);
+        servo_plane.setPosition(0.46);
         servo_hang.setPosition(1);
         encLeft.setPower(0);
     }
