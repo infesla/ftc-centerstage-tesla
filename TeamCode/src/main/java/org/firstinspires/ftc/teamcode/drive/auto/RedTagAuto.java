@@ -418,14 +418,7 @@ public class RedTagAuto extends LinearOpMode {
 
         PixelsControl.setTele(0);
 
-        while (PixelsControl.motor_flip.getCurrentPosition() < 95) {
-            PixelsControl.motor_flip.setPower(0.3);
-            telemetry.addData("num", 2);
-            telemetry.addData("Motor_flip", PixelsControl.motor_flip.getCurrentPosition());
-            telemetry.update();
-        }
-
-        PixelsControl.motor_flip.setPower(0);
+        PixelsControl.setFlip(0.3);
 
         sleep(1000);
 
@@ -437,14 +430,7 @@ public class RedTagAuto extends LinearOpMode {
 
         sleep(1000);
 
-        while (PixelsControl.motor_flip.getCurrentPosition() > 5) {
-            PixelsControl.motor_flip.setPower(-0.5);
-            telemetry.addData("num", 1);
-            telemetry.addData("Motor_flip", PixelsControl.motor_flip.getCurrentPosition());
-            telemetry.update();
-        }
-
-        PixelsControl.motor_flip.setPower(-0.002);
+        PixelsControl.setFlip(0.795);
 
         PixelsControl.setTele(-1);
 

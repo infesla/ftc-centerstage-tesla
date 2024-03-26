@@ -25,8 +25,8 @@ public class EGA_CAR extends LinearOpMode {
 
     public ElapsedTime runtime_flip = new ElapsedTime();
 
-    private double flip_last_moment_switch = 0.0, flip_moment_diff_switch = 0.0;
-    private double hook_last_moment_switch = 0.0, hook_moment_diff_switch = 0.0;
+    private double flip_last_moment_switch = 0.0, flip_moment_diff_switch = 0.0, color_moment_diff = 0.0;
+    private double hook_last_moment_switch = 0.0, hook_moment_diff_switch = 0.0, color_moment_last = 0.0;
     private double a;
 
     private boolean is_servo_flip_opened = false;
@@ -34,8 +34,7 @@ public class EGA_CAR extends LinearOpMode {
     private boolean is_servo_plane_opened = false;
     private boolean is_servo_hang_opened = false;
 
-    private boolean is_motor_flip_opened = true;
-
+    /*
     class FlipMotorThread extends Thread {
         @Override
         public void run() {
@@ -68,6 +67,7 @@ public class EGA_CAR extends LinearOpMode {
             }
         }
     }
+    */
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,13 +78,13 @@ public class EGA_CAR extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        FlipMotorThread flipMotorThread = new FlipMotorThread();
+        //FlipMotorThread flipMotorThread = new FlipMotorThread();
 
         waitForStart();
 
         while (!isStopRequested()) {
 
-            a = gamepad1.left_trigger < 0.15 ? 0.65 : 1;
+            a = gamepad1.left_trigger > 0.15 ? 1 : 0.65;
 
             drive.setWeightedDrivePower(
                     new Pose2d(
@@ -95,6 +95,38 @@ public class EGA_CAR extends LinearOpMode {
             );
 
             drive.update();
+
+            //Hook
+            //if (gamepad2.y == true && hook_moment_diff_switch > 200) {
+            //if (is_servo_hook_opened == false) {
+            // PixelsControl.setHook(0.2);
+            // is_servo_hook_opened = true;
+            // } else {
+            //  PixelsControl.setHook(0.795);
+            //    is_servo_hook_opened = false;
+            // }
+            // hook_last_moment_switch = runtime.milliseconds();
+            //  }
+
+            //First gamepad
+
+            //Hang
+            if (gamepad1.right_trigger > 0.1) {
+                PixelsControl.setHang(0.5);
+            } else {
+                PixelsControl.setHang(1);
+            }
+
+            //Pull up
+            if (gamepad1.a) {
+                PixelsControl.encLeft(1);
+            } else if (gamepad1.b) {
+                PixelsControl.encLeft(-1);
+            } else {
+                PixelsControl.encLeft(0);
+            }
+
+            //Second gamepad
 
             //Suction
             if (gamepad2.right_bumper) {
@@ -108,77 +140,78 @@ public class EGA_CAR extends LinearOpMode {
             //Tele
             if (gamepad2.left_stick_y > 0.15 && !PixelsControl.touch.isPressed()) {
                 PixelsControl.setTele(-gamepad2.left_stick_y);
-            }
-            else if (gamepad2.left_stick_y < -0.15) {
+            } else if (gamepad2.left_stick_y < -0.15) {
                 PixelsControl.setTele(-gamepad2.left_stick_y);
-            }
-            else {
+            } else {
                 PixelsControl.setTele(0);
+            }
+
+            //Hook
+            if (gamepad2.right_trigger > 0.1) {
+                PixelsControl.setHook(0.3);
+            } else {
+                PixelsControl.setHook(0.795);
+            }
+
+
+            //Hook 2
+            hook_moment_diff_switch = runtime.milliseconds() - hook_last_moment_switch;
+
+            if (gamepad2.x && hook_moment_diff_switch > 1500) {
+                if (is_servo_hook_opened) {
+                    PixelsControl.setHook_2(0.3);
+                    is_servo_hook_opened = false;
+                } else {
+                    PixelsControl.setHook_2(0);
+                    is_servo_hook_opened = true;
+                }
+                hook_last_moment_switch = runtime.milliseconds();
             }
 
             //Flip
             flip_moment_diff_switch = runtime.milliseconds() - flip_last_moment_switch;
-            hook_moment_diff_switch = runtime.milliseconds() - hook_last_moment_switch;
 
-            if (gamepad2.x && flip_moment_diff_switch > 1500) {
+            if (gamepad2.y && flip_moment_diff_switch > 500) {
                 if (!is_servo_flip_opened) {
-                    PixelsControl.setHook_2(0);
+                    PixelsControl.setFlip(0.03);
                     is_servo_flip_opened = true;
                 } else {
-                    PixelsControl.setHook_2(0.3);
+                    PixelsControl.setFlip(1);
                     is_servo_flip_opened = false;
                 }
                 flip_last_moment_switch = runtime.milliseconds();
             }
 
-            if (gamepad2.a && flip_moment_diff_switch > 200) {
-                if (!flipMotorThread.isAlive()) {
-                    flipMotorThread = new FlipMotorThread();
-                    flipMotorThread.start();
-                }
-                flip_last_moment_switch = runtime.milliseconds();
-            }
-
-            //Hook
-            if (gamepad2.y == true && hook_moment_diff_switch > 200) {
-                if (is_servo_hook_opened == false) {
-                    PixelsControl.setHook(0.2);
-                    is_servo_hook_opened = true;
-                } else {
-                    PixelsControl.setHook(0.795);
-                    is_servo_hook_opened = false;
-                }
-                hook_last_moment_switch = runtime.milliseconds();
-            }
-
-            //Hang
-            if (gamepad1.x) {
-                if(is_servo_hang_opened == false) {
-                    PixelsControl.sethang(0.5);
-                    is_servo_hang_opened = true;
-                } else {
-
-                    PixelsControl.sethang(1);
-                    is_servo_hang_opened = false;
-                }
-            }
-            if(gamepad1.a) {
-                PixelsControl.encLeft(1);
-            } else if (gamepad1.b) {
-                PixelsControl.encLeft(-1);
-            } else{
-                PixelsControl.encLeft(0);
-            }
             //Airplane
-            if (gamepad2.back) {
+            if (gamepad2.start) {
                 if (is_servo_plane_opened == false) {
-                    PixelsControl.setPlane(0);
+                    PixelsControl.setPlane(0.19);
                     is_servo_plane_opened = true;
                 }
             }
 
-            Pose2d poseEstimate = drive.getPoseEstimate();
+            //Color
+            color_moment_diff = runtime.milliseconds() - color_moment_last;
 
+            if (color_moment_diff > 2000) {
+
+                if (PixelsControl.getDistance() < 70) {
+                    PixelsControl.setHook_2(0);
+                    is_servo_hook_opened = true;
+                } else {
+                    PixelsControl.setHook_2(0.3);
+                    is_servo_hook_opened = false;
+                }
+
+                color_moment_last = runtime.milliseconds();
+
+            }
+
+            //LED
+            PixelsControl.setLed_flip(is_servo_hook_opened ? 0.5 : 0);
+
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("color", PixelsControl.getDistance());
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
