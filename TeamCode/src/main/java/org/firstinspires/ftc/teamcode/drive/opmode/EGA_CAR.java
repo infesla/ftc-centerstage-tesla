@@ -23,8 +23,6 @@ public class EGA_CAR extends LinearOpMode {
     public PixelsControl PixelsControl = new PixelsControl();
     public ElapsedTime runtime = new ElapsedTime();
 
-    public ElapsedTime runtime_flip = new ElapsedTime();
-
     private double flip_last_moment_switch = 0.0, flip_moment_diff_switch = 0.0, color_moment_diff = 0.0;
     private double hook_last_moment_switch = 0.0, hook_moment_diff_switch = 0.0, color_moment_last = 0.0;
     private double a;
