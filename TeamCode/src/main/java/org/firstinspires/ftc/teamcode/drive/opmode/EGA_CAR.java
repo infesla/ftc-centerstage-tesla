@@ -72,6 +72,8 @@ public class EGA_CAR extends LinearOpMode {
 
         PixelsControl.initHW(this);
 
+        PixelsControl.setPlane(0.2);
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -110,15 +112,15 @@ public class EGA_CAR extends LinearOpMode {
 
             //Hang
             if (gamepad1.right_trigger > 0.1) {
-                PixelsControl.setHang(0.5);
+                PixelsControl.setHang(0.4);
             } else {
                 PixelsControl.setHang(1);
             }
 
             //Airplane
-            if (gamepad1.back) {
+            if (gamepad1.back && gamepad1.start) {
                 if (is_servo_plane_opened == false) {
-                    PixelsControl.setPlane(0.19);
+                    PixelsControl.setPlane(0.6);
                     is_servo_plane_opened = true;
                 }
             }
@@ -179,10 +181,10 @@ public class EGA_CAR extends LinearOpMode {
 
             if (gamepad2.y && flip_moment_diff_switch > 500) {
                 if (!is_servo_flip_opened) {
-                    PixelsControl.setFlip(0.03);
+                    PixelsControl.setFlip(0);
                     is_servo_flip_opened = true;
                 } else {
-                    PixelsControl.setFlip(1);
+                    PixelsControl.setFlip(0.65);
                     is_servo_flip_opened = false;
                 }
                 flip_last_moment_switch = runtime.milliseconds();
@@ -194,7 +196,7 @@ public class EGA_CAR extends LinearOpMode {
 
             if (color_moment_diff > 2000) {
 
-                if (PixelsControl.getDistance() < 70) {
+                if (PixelsControl.getDistance() < 40) {
                     PixelsControl.setHook_2(0);
                     is_servo_hook_opened = true;
                 } else {

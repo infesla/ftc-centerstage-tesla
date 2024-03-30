@@ -34,7 +34,7 @@ public class EasyLeftAP extends LinearOpMode {
 
         runtime.reset();
 
-        while (!isStopRequested() && (runtime.milliseconds() - 2000) < 0) {
+        while (!isStopRequested() && (runtime.milliseconds() - 3000) < 0) {
             leftFront.setPower(0.5);
             leftRear.setPower(-0.5);
             rightFront.setPower(0.5);

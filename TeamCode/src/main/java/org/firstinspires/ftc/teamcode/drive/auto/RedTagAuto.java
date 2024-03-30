@@ -35,7 +35,7 @@ public class RedTagAuto extends LinearOpMode {
     public ElapsedTime runtime = new ElapsedTime();
     private boolean isDetected = false;
 
-    private int drive_id = 1;
+    private int drive_id = 4;
 
     private WebcamName webcam1, webcam2;
 
@@ -60,9 +60,10 @@ public class RedTagAuto extends LinearOpMode {
     double STRAFE_GAIN = 0.02;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     double TURN_GAIN = 0.01;    //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    double MAX_AUTO_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
-    double MAX_AUTO_STRAFE = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
+    double MAX_AUTO_SPEED = 0.7;   //  Clip the approach speed to this max value (adjust for your robot)
+    double MAX_AUTO_STRAFE = 0.7;   //  Clip the approach speed to this max value (adjust for your robot)
     double MAX_AUTO_TURN = 0.4;   //  Clip the turn speed to this max value (adjust for your robot)
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -110,7 +111,7 @@ public class RedTagAuto extends LinearOpMode {
 
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
-        exposureControl.setExposure((long) 6, TimeUnit.MILLISECONDS);
+        exposureControl.setExposure((long) 14, TimeUnit.MILLISECONDS);
 
         //Hardware init
 
@@ -185,13 +186,9 @@ public class RedTagAuto extends LinearOpMode {
         rightFront.setPower(0);
         rightRear.setPower(0);
 
-        sleep(500);
+        sleep(1000);
 
-        SPEED_GAIN = 0.02;
-
-        STRAFE_GAIN = 0.02;
-
-        TURN_GAIN = 0.017; //changed
+        //changed
 
         runtime.reset();
 
@@ -218,14 +215,18 @@ public class RedTagAuto extends LinearOpMode {
 
         sleep(500);
 
+        SPEED_GAIN = 0.035;
+        STRAFE_GAIN = 0.035;
+        TURN_GAIN = 0.01;
+
         if (position == Position.CENTER) {
 
-            SPEED_GAIN = 0.05;
-            STRAFE_GAIN = 0.1;
+            SPEED_GAIN = 0.035;
+            STRAFE_GAIN = 0.15;
             TURN_GAIN = 0.01;
 
             runtime.reset();
-            while (runtime.milliseconds() < 500 && !isStopRequested()) {
+            while (runtime.milliseconds() < 600 && !isStopRequested()) {
                 List<AprilTagDetection> myAprilTagDetections = tagProcessor.getDetections();
 
                 isDetected = false;
@@ -237,9 +238,9 @@ public class RedTagAuto extends LinearOpMode {
                     }
                 }
 
-                double rangeError = (tag.ftcPose.range - 30);
+                double rangeError = (tag.ftcPose.range - 35);
                 double yawError = tag.ftcPose.yaw;
-                double xError = tag.ftcPose.x - 5;
+                double xError = tag.ftcPose.x - 15;
 
                 calcRobot(rangeError, 0, xError, tag);
             }
@@ -261,7 +262,7 @@ public class RedTagAuto extends LinearOpMode {
                     }
                 }
 
-                double rangeError = (tag.ftcPose.range - 50);
+                double rangeError = (tag.ftcPose.range - 53);
                 double headingError = (tag.ftcPose.bearing);
                 double yawError = tag.ftcPose.yaw;
 
@@ -285,7 +286,7 @@ public class RedTagAuto extends LinearOpMode {
                     }
                 }
 
-                double rangeError      = (tag.ftcPose.range - 20);
+                double rangeError      = (tag.ftcPose.range - 25);
                 double headingError    = (tag.ftcPose.bearing);
                 double yawError        = tag.ftcPose.yaw;
 
@@ -294,19 +295,19 @@ public class RedTagAuto extends LinearOpMode {
             }
         }
 
+        runtime.reset();
+
+        SPEED_GAIN = 0.035;
+        STRAFE_GAIN = 0.035;
+        TURN_GAIN = 0.01;
+
         sleep(250);
 
-        PixelsControl.setSuction(0.4);
+        PixelsControl.setSuction(0.6);
 
         sleep(1000);
 
         PixelsControl.setSuction(0);
-
-        SPEED_GAIN = 0.02;
-
-        STRAFE_GAIN = 0.1;
-
-        TURN_GAIN = 0.01;
 
         runtime.reset();
 
@@ -323,34 +324,32 @@ public class RedTagAuto extends LinearOpMode {
                 }
             }
 
-            double rangeError = (tag.ftcPose.range - 30);
-            double yawError = tag.ftcPose.yaw;
-            double xError = tag.ftcPose.x;
+            double rangeError      = (tag.ftcPose.range - 30);
+            double headingError    = (tag.ftcPose.bearing);
+            double yawError        = tag.ftcPose.yaw;
 
-            calcRobot(rangeError, 0, xError, tag);
+            calcRobot(rangeError, headingError, yawError, tag);
 
         }
 
         sleep(250);
 
-        SPEED_GAIN = 0.02;
-
-        STRAFE_GAIN = 0.02;
-
+        SPEED_GAIN = 0.035;
+        STRAFE_GAIN = 0.035;
         TURN_GAIN = 0.01; //changed
-
-        runtime.reset();
 
         int end_id = 0;
         if (position == Position.CENTER) {
-            end_id = 2;
+            end_id = 5;
         }
         else if (position == Position.LEFT) {
-            end_id = 1;
+            end_id = 4;
         }
         else {
-            end_id = 3;
+            end_id = 6;
         }
+
+        runtime.reset();
 
         while (runtime.milliseconds() < 1000 && !isStopRequested()) {
 
@@ -396,13 +395,21 @@ public class RedTagAuto extends LinearOpMode {
 
         }
 
+        PixelsControl.setTele(1);
+
+        sleep(900);
+
+        PixelsControl.setTele(0);
+
+        PixelsControl.setFlip(0.65);
+
         runtime.reset();
 
-        while (!isStopRequested() && ((runtime.milliseconds() - 400) < 0)) {
-            leftFront.setPower(0.2);
-            leftRear.setPower(0.2);
-            rightFront.setPower(0.2);
-            rightRear.setPower(0.2);
+        while (!isStopRequested() && ((runtime.milliseconds() - 800) < 0)) {
+            leftFront.setPower(0.3);
+            leftRear.setPower(0.25);
+            rightFront.setPower(0.3);
+            rightRear.setPower(0.25);
         }
 
         leftFront.setPower(0);
@@ -412,27 +419,42 @@ public class RedTagAuto extends LinearOpMode {
 
         runtime.reset();
 
-        PixelsControl.setTele(1);
-
-        sleep(700);
-
-        PixelsControl.setTele(0);
-
-        PixelsControl.setFlip(1);
-
-        sleep(1000);
+        sleep(500);
 
         PixelsControl.setHook(0.3);
 
         sleep(1000);
 
-        PixelsControl.setFlip(1);
+        PixelsControl.setTele(1);
 
-        sleep(1000);
+        sleep(500);
+
+        PixelsControl.setTele(0);
 
         PixelsControl.setHook(0.795);
 
         sleep(1000);
+
+        runtime.reset();
+
+        while (!isStopRequested() && ((runtime.milliseconds() - 300) < 0)) {
+            leftFront.setPower(-0.3);
+            leftRear.setPower(-0.3);
+            rightFront.setPower(-0.3);
+            rightRear.setPower(-0.3);
+        }
+
+        sleep(500);
+
+
+        runtime.reset();
+
+        while (!isStopRequested() && ((runtime.milliseconds() - 500) < 0)) {
+            leftFront.setPower(-0.4);
+            leftRear.setPower(0.4);
+            rightFront.setPower(0.4);
+            rightRear.setPower(-0.4);
+        }
 
         PixelsControl.setFlip(0.03);
 
